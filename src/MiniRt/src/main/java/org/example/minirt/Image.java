@@ -52,7 +52,7 @@ public class Image {
             File file = new File(filename);
             ImageIO.write(image, "jpg", file);
         } catch (IOException e) {
-            System.err.println("Error writing file: " + e.getMessage());
+            System.err.println("Error writing file " + filename + ": " + e.getMessage());
         }
     }
 }

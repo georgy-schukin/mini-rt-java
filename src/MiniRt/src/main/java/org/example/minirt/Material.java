@@ -32,6 +32,12 @@ public class Material {
         this.shininess = 25;
     }
 
+    public Material clone() {
+        Material clone = new Material(diffuseColor, specularColor, shininess);
+        clone.makeTransparent(refractionCoeff, refractionIndex);
+        return clone;
+    }
+
     public void setDiffuse(Color diffuse) {
         this.diffuseColor = diffuse;
     }

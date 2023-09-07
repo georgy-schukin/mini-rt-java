@@ -49,8 +49,14 @@ public class MiniRt {
         int viewPlaneResolutionX = args.length > 0 ? Integer.parseInt(args[0]) : 600;
         int viewPlaneResolutionY = args.length > 1 ? Integer.parseInt(args[1]) : 600;
         int numOfSamples = args.length > 2 ? Integer.parseInt(args[2]) : 1;
+        String sceneFile = args.length > 3 ? args[3] : "";
 
-        Scene scene = initScene();
+        Scene scene = new Scene();
+        if (!sceneFile.isEmpty()) {
+            scene.loadFromFile(sceneFile);
+        } else {
+            scene = initScene();
+        }
 
         double backgroundSizeX = 4;
         double backgroundSizeY = 4;

@@ -57,7 +57,7 @@ public class Scene {
 
     public void loadFromFile(String filename) {
         SceneLoader loader = new SceneLoader();
-        //loader.loadSceneFromFile(filename, *this);
+        loader.loadSceneFromFile(filename, this);
     }
 
     static public class Intersection {
