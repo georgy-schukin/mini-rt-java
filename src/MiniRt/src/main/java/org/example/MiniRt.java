@@ -46,9 +46,9 @@ public class MiniRt {
     }
 
     public static void main(String[] args) {
-        int viewPlaneResolutionX = args.length > 1 ? Integer.parseInt(args[1]) : 600;
-        int viewPlaneResolutionY = args.length > 2 ? Integer.parseInt(args[2]) : 600;
-        int numOfSamples = args.length > 3 ? Integer.parseInt(args[3]) : 1;
+        int viewPlaneResolutionX = args.length > 0 ? Integer.parseInt(args[0]) : 600;
+        int viewPlaneResolutionY = args.length > 1 ? Integer.parseInt(args[1]) : 600;
+        int numOfSamples = args.length > 2 ? Integer.parseInt(args[2]) : 1;
 
         Scene scene = initScene();
 

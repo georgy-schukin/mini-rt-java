@@ -21,23 +21,30 @@ public class Image {
     }
 
     public void set(int x, int y, Color color) {
-        java.awt.Color rgbColor = new java.awt.Color((float)color.red, (float)color.green, (float)color.blue);
-        image.setRGB(x, y, rgbColor.getRGB());
+        setRGB(x, y, color.toRGB());
     }
 
     public void setRGB(int x, int y, int rgb) {
-        image.setRGB(x, y, rgb);
+        image.setRGB(x, getHeight() - y - 1, rgb);
     }
 
     public Color get(int x, int y) {
-        int rgb = image.getRGB(x, y);
-        java.awt.Color rgbColor = new java.awt.Color(rgb);
-        float[] comps = rgbColor.getRGBColorComponents(null);
-        return new Color(comps[0], comps[1], comps[2]);
+        return Color.fromRGB(getRGB(x, y));
     }
 
     public int getRGB(int x, int y) {
-        return image.getRGB(x, y);
+        return image.getRGB(x, getHeight() - y - 1);
+    }
+
+    // Insert src image starting from given position.
+    public void copy(int x, int y, Image src) {
+        int sx = Math.min(src.getWidth(), getWidth() - x);
+        int sy = Math.min(src.getHeight(), getHeight() - y);
+        for (int i = 0; i < sx; i++) {
+            for (int j = 0; j < sy; j++) {
+                setRGB(x + i, y + j, src.getRGB(i, j));
+            }
+        }
     }
 
     public void saveJPEG(String filename) {

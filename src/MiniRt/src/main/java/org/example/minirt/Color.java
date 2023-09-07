@@ -49,4 +49,15 @@ public class Color {
         double b = Math.max(min, Math.min(max, blue));
         return new Color(r, g, b);
     }
+
+    public static Color fromRGB(int rgb) {
+        java.awt.Color rgbColor = new java.awt.Color(rgb);
+        float[] comps = rgbColor.getRGBColorComponents(null);
+        return new Color(comps[0], comps[1], comps[2]);
+    }
+
+    public int toRGB() {
+        java.awt.Color rgbColor = new java.awt.Color((float)red, (float)green, (float)blue);
+        return rgbColor.getRGB();
+    }
 }
