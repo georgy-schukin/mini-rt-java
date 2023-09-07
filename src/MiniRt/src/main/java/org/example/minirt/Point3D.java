@@ -40,10 +40,4 @@ public class Point3D {
     public static Point3D minus(Point3D p1, Point3D p2) {
         return new Point3D(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
     }
-
-    /*Vector3D operator -(const Point3D &p1, const Point3D &p2);
-    Point3D operator +(const Point3D &p, const Vector3D &v);
-    Point3D operator -(const Point3D &p, const Vector3D &v);
-
-    std::istream& operator >> (std::istream &in, Point3D &p);*/
 }

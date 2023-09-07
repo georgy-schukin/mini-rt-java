@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.Scanner;
 
 public class SceneLoader {
-    private Map<String, Material> materials = new HashMap<>();
+    private final Map<String, Material> materials = new HashMap<>();
 
     public void loadSceneFromFile(String filename, Scene scene) {
         try {
@@ -26,180 +26,199 @@ public class SceneLoader {
         if (tag.isEmpty()) {
             return;
         }
-        if (tag == "sphere") {
-            Sphere sphere = loadSphere(scanner);
-            scene.addSphere(sphere);
-        } else if (tag == "light") {
-            PointLight light = loadLight(scanner);
-            scene.addLight(light);
-        } else if (tag == "camera") {
-            Camera camera = loadCamera(scanner);
-            scene.setCamera(camera);
-        } else if (tag == "mat" || tag == "material") {
-            String materialName = scanner.next();
-            materials.put(materialName, loadMaterial(scanner));
-        } else if (tag == "ambient") {
-            Color color = loadColor(scanner);
-            scene.setAmbient(color);
-        } else if (tag == "background") {
-            Color color = loadColor(scanner);
-            scene.setBackground(color);
-        } else if (tag == "recursion") {
-            int limit = loadInt(scanner);
-            scene.setRecursionLimit(limit);
-        } else {
-            throw new IOException("Unknown tag: " + tag);
+        switch (tag) {
+            case "sphere" -> {
+                Sphere sphere = readSphere(scanner);
+                scene.addSphere(sphere);
+            }
+            case "light" -> {
+                PointLight light = readLight(scanner);
+                scene.addLight(light);
+            }
+            case "camera" -> {
+                Camera camera = readCamera(scanner);
+                scene.setCamera(camera);
+            }
+            case "mat", "material" -> {
+                String materialName = scanner.next();
+                materials.put(materialName, readMaterial(scanner));
+            }
+            case "ambient" -> {
+                Color ambientColor = readColor(scanner);
+                scene.setAmbient(ambientColor);
+            }
+            case "background" -> {
+                Color bgColor = readColor(scanner);
+                scene.setBackground(bgColor);
+            }
+            case "recursion" -> {
+                int limit = readInt(scanner);
+                scene.setRecursionLimit(limit);
+            }
+            default -> throw new IOException("Unknown tag: " + tag);
         }
     }
 
-    private Sphere loadSphere(Scanner scanner) throws IOException {
+    private Sphere readSphere(Scanner scanner) throws IOException {
         Point3D pos = new Point3D(0);
         double radius = 1.0;
         Material material = new Material(new Color(1.0));
-        while (scanner.hasNext()) {
+        boolean stop = false;
+        while (scanner.hasNext() && !stop) {
             String tag = scanner.next();
             if (tag.isEmpty()) {
                 continue;
             }
-            if (tag == "pos" || tag == "position") {
-                pos = loadPoint(scanner);
-            } else if (tag == "rad" || tag == "radius") {
-                radius = loadDouble(scanner);
-            } else if (tag == "mat" || tag == "material") {
-                String materialName = scanner.next();
-                Material mat = materials.get(materialName);
-                if (mat == null) {
-                    throw new IOException("Unlnown material name: " + materialName);
+            switch (tag) {
+                case "pos", "position" -> {
+                    pos = readPoint(scanner);
                 }
-                material = mat.clone();
-            } else if (tag == "color") {
-                Color color = loadColor(scanner);
-                material.setDiffuseAndSpecular(color);
-            } else if (tag == "diffuse") {
-                Color color = loadColor(scanner);
-                material.setDiffuse(color);
-            } else if (tag == "specular") {
-                Color color = loadColor(scanner);
-                material.setSpecular(color);
-            } else if (tag == "shininess") {
-                double shininess = loadDouble(scanner);
-                material.setShininess(shininess);
-            } else if (tag == "transparent") {
-                double refrCoeff = loadDouble(scanner);
-                double refrIndex = loadDouble(scanner);
-                material.makeTransparent(refrCoeff, refrIndex);
-            } else if (tag == "end") {
-                break;
-            } else {
-                throw new IOException("Unknown sphere parameter: " + tag);
+                case "rad", "radius" -> {
+                    radius = readDouble(scanner);
+                }
+                case "mat", "material" -> {
+                    String materialName = scanner.next();
+                    Material mat = materials.get(materialName);
+                    if (mat == null) {
+                        throw new IOException("Unknown material name: " + materialName);
+                    }
+                    material = mat.clone();
+                }
+                case "color" -> {
+                    Color color = readColor(scanner);
+                    material.setDiffuseAndSpecular(color);
+                }
+                case "diffuse" -> {
+                    Color diffuseColor = readColor(scanner);
+                    material.setDiffuse(diffuseColor);
+                }
+                case "specular" -> {
+                    Color specularColor = readColor(scanner);
+                    material.setSpecular(specularColor);
+                }
+                case "shininess" -> {
+                    double shininess = readDouble(scanner);
+                    material.setShininess(shininess);
+                }
+                case "transparent" -> {
+                    double refrCoeff = readDouble(scanner);
+                    double refrIndex = readDouble(scanner);
+                    material.makeTransparent(refrCoeff, refrIndex);
+                }
+                case "end" -> stop = true;
+                default -> throw new IOException("Unknown sphere parameter: " + tag);
             }
         }
         return new Sphere(pos, radius, material);
     }
 
-    private PointLight loadLight(Scanner scanner) throws IOException {
+    private PointLight readLight(Scanner scanner) throws IOException {
         Point3D pos = new Point3D(0);
         Color color = new Color(1);
-        while (scanner.hasNext()) {
+        boolean stop = false;
+        while (scanner.hasNext() && !stop) {
             String tag = scanner.next();
             if (tag.isEmpty()) {
                 continue;
             }
-            if (tag == "pos" || tag == "position") {
-                pos = loadPoint(scanner);
-            } else if (tag == "color") {
-                color = loadColor(scanner);
-            } else if (tag == "end") {
-                break;
-            } else {
-                throw new IOException("Unknown light parameter: " + tag);
+            switch (tag) {
+                case "pos", "position" -> {
+                    pos = readPoint(scanner);
+                }
+                case "color" -> {
+                    color = readColor(scanner);
+                }
+                case "end" -> stop = true;
+                default -> throw new IOException("Unknown light parameter: " + tag);
             }
         }
         return new PointLight(pos, color);
     }
 
-    private Material loadMaterial(Scanner scanner) throws IOException  {
+    private Material readMaterial(Scanner scanner) throws IOException  {
         Material material = new Material(new Color (1.0));
-        while (scanner.hasNext()) {
+        boolean stop = false;
+        while (scanner.hasNext() && !stop) {
             String tag = scanner.next();
             if (tag.isEmpty()) {
                 continue;
             }
-            if (tag == "color") {
-                Color color = loadColor(scanner);
-                material.setDiffuseAndSpecular(color);
-            } else if (tag == "diffuse") {
-                Color color = loadColor(scanner);
-                material.setDiffuse(color);
-            } else if (tag == "specular") {
-                Color color = loadColor(scanner);
-                material.setSpecular(color);
-            } else if (tag == "shininess") {
-                double shininess = loadDouble(scanner);
-                material.setShininess(shininess);
-            } else if (tag == "transparent") {
-                double refrCoeff = loadDouble(scanner);
-                double refrIndex = loadDouble(scanner);
-                material.makeTransparent(refrCoeff, refrIndex);
-            } else if (tag == "end") {
-                break;
-            } else {
-                throw new IOException("Unknown material parameter: " + tag);
+            switch (tag) {
+                case "color" -> {
+                    Color color = readColor(scanner);
+                    material.setDiffuseAndSpecular(color);
+                }
+                case "diffuse" -> {
+                    Color diffuseColor = readColor(scanner);
+                    material.setDiffuse(diffuseColor);
+                }
+                case "specular" -> {
+                    Color specularColor = readColor(scanner);
+                    material.setSpecular(specularColor);
+                }
+                case "shininess" -> {
+                    double shininess = readDouble(scanner);
+                    material.setShininess(shininess);
+                }
+                case "transparent" -> {
+                    double refrCoeff = readDouble(scanner);
+                    double refrIndex = readDouble(scanner);
+                    material.makeTransparent(refrCoeff, refrIndex);
+                }
+                case "end" -> stop = true;
+                default -> throw new IOException("Unknown material parameter: " + tag);
             }
         }
         return material;
     }
 
-    private Camera loadCamera(Scanner scanner) throws IOException  {
+    private Camera readCamera(Scanner scanner) throws IOException  {
         Point3D viewPoint = new Point3D(0);
         Point3D target = new Point3D(0);
         Vector3D up = new Vector3D(0, 1, 0);
-        while (scanner.hasNext()) {
+        boolean stop = false;
+        while (scanner.hasNext() && !stop) {
             String tag = scanner.next();
             if (tag.isEmpty()) {
                 continue;
             }
-            if (tag == "pos" || tag == "position") {
-                viewPoint = loadPoint(scanner);
-            } else if (tag == "target") {
-                target = loadPoint(scanner);
-            } else if (tag == "up") {
-                up = loadVector(scanner);
-            } else if (tag == "end") {
-                break;
-            } else {
-                throw new IOException("Unknown camera parameter: " + tag);
+            switch (tag) {
+                case "pos", "position" -> viewPoint = readPoint(scanner);
+                case "target" -> target = readPoint(scanner);
+                case "up" -> up = readVector(scanner);
+                case "end" -> stop = true;
+                default -> throw new IOException("Unknown camera parameter: " + tag);
             }
         }
         return new Camera(viewPoint, target, up);
     }
 
-    private Color loadColor(Scanner scanner) {
-        double red = loadDouble(scanner);
-        double green = loadDouble(scanner);
-        double blue = loadDouble(scanner);
+    private Color readColor(Scanner scanner) {
+        double red = readDouble(scanner);
+        double green = readDouble(scanner);
+        double blue = readDouble(scanner);
         return new Color(red, green, blue);
     }
 
-    private Point3D loadPoint(Scanner scanner) {
-        double x = loadDouble(scanner);
-        double y = loadDouble(scanner);
-        double z = loadDouble(scanner);
+    private Point3D readPoint(Scanner scanner) {
+        double x = readDouble(scanner);
+        double y = readDouble(scanner);
+        double z = readDouble(scanner);
         return new Point3D(x, y, z);
     }
 
-    private Vector3D loadVector(Scanner scanner) {
-        double x = loadDouble(scanner);
-        double y = loadDouble(scanner);
-        double z = loadDouble(scanner);
+    private Vector3D readVector(Scanner scanner) {
+        double x = readDouble(scanner);
+        double y = readDouble(scanner);
+        double z = readDouble(scanner);
         return new Vector3D(x, y, z);
     }
 
-    private double loadDouble(Scanner scanner) {
+    private double readDouble(Scanner scanner) {
         return Double.parseDouble(scanner.next());
     }
 
-    private int loadInt(Scanner scanner) {
+    private int readInt(Scanner scanner) {
         return Integer.parseInt(scanner.next());
     }
 }
