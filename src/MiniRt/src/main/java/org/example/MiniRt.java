@@ -46,9 +46,9 @@ public class MiniRt {
     }
 
     public static void main(String[] args) {
-        int viewPlaneResolutionX = 600;
-        int viewPlaneResolutionY = 600;
-        int numOfSamples = 1;
+        int viewPlaneResolutionX = args.length > 1 ? Integer.parseInt(args[1]) : 600;
+        int viewPlaneResolutionY = args.length > 2 ? Integer.parseInt(args[2]) : 600;
+        int numOfSamples = args.length > 3 ? Integer.parseInt(args[3]) : 1;
 
         Scene scene = initScene();
 
@@ -63,13 +63,13 @@ public class MiniRt {
         ViewPlane viewPlane = new ViewPlane(viewPlaneResolutionX, viewPlaneResolutionY,
                 viewPlaneSizeX, viewPlaneSizeY, viewPlaneDistance);
 
-        //Image image(viewPlaneResolutionX, viewPlaneResolutionY); // computed image
-        for(int x = 0; x < viewPlaneResolutionX; x++)
-            for(int y = 0; y < viewPlaneResolutionY; y++) {
+        Image image = new Image(viewPlaneResolutionX, viewPlaneResolutionY); // computed image
+        for(int x = 0; x < viewPlaneResolutionX; x++) {
+            for (int y = 0; y < viewPlaneResolutionY; y++) {
                 Color color = viewPlane.computePixel(scene, x, y, numOfSamples);
-                //image.set(x, y, color);
+                image.set(x, y, color);
             }
-
-        //image.saveJPEG("raytracing.jpg");
+        }
+        image.saveJPEG("raytracing.jpg");
     }
 }

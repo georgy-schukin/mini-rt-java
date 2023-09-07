@@ -106,3 +106,9 @@ nb-configuration.xml
 ## OS X
 ##############################
 .DS_Store
+
+# Image files
+*.jpg
+*.jpeg
+*.png
+*.bmp

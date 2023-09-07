@@ -28,11 +28,11 @@ public class Color {
     }
 
     public Color multiplied(double coeff) {
-        return new Color(red + coeff, green * coeff, blue * coeff);
+        return new Color(red * coeff, green * coeff, blue * coeff);
     }
 
     public Color multiplied(Color c) {
-        return new Color(red + c.red, green * c.green, blue * c.blue);
+        return new Color(red * c.red, green * c.green, blue * c.blue);
     }
 
     public Color divided(double coeff) {
