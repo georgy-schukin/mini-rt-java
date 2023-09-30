@@ -2,7 +2,7 @@ package org.example;
 
 import org.example.minirt.*;
 
-public class MiniRt {
+public class MiniRtExample {
 
     public static Scene initScene() {
         Scene scene = new Scene();
